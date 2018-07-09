@@ -1,28 +1,32 @@
 var express=require('express');
 var cors=require('cors');
 var bodyparser=require('body-parser');
-//var path=require('path');
-var app=express();
-
+const passport =require('passport');
+var path=require('path');
+const config=require('./config/database');
 const route=require('./routes/route');
 var mongoose=require('mongoose');
 
+
+var app=express();
 const port=3000;
-
-
-
-
-
-
 
 app.use(cors());
 app.use(bodyparser.json());
 
-//app.use(express.static(path.join(__dirname,'public')));
+app.use(passport.initialize());
+app.use(passport.session());
+
+require('./config/passport')(passport);
+
+
+app.use(express.static(path.join(__dirname,'public')));
 app.use('/api',route);
 
+
+
 //connected to database
-mongoose.connect('mongodb://localhost:27017/GymProject');
+mongoose.connect(config.database);
 
 //checking the  database connected 
 mongoose.connection.on('connected',()=>{
