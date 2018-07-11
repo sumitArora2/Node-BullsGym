@@ -14,7 +14,7 @@ router.post('/register',(req,res,next)=>{
     contact_no:req.body.contact_no,
     age:req.body.age,
     gender:req.body.gender,
-    password:req.body.password
+    password:req.body.password,
     });
     User.addUser(newUser,(err,user)=>{
     if(err)
@@ -54,7 +54,8 @@ res.json({
         name:user.name,
         contact_no:user.contact_no,
         age:user.age,
-        gender:user.gender
+        gender:user.gender,
+        role:user.role
     }
 });
 }
