@@ -4,8 +4,8 @@ const User=require('../models/user');
 const passport=require('passport');
 const jwt=require('jsonwebtoken');
 const config=require('../config/database');
-
-
+const bcrypt = require('bcryptjs');
+const contact=require('../models/contactus');
 //Add the details of users
 router.post('/register',(req,res,next)=>{
     let newUser=new User({
@@ -71,9 +71,94 @@ return res.json({success:false,msg:'Wrong Password'});
 router.get('/profile',passport.authenticate('jwt',{session:false}),(req,res,next)=>{
 res.json({user:req.user});
 });
-module.exports=router;
+
+
+
+//update the user_details information
+router.put('/update/:id',(req,res,next)=>{
+    var   myPlaintextPassword=req.body.password;
+
+        bcrypt.genSalt(10, function(err, salt) {
+            bcrypt.hash(myPlaintextPassword, salt, function(err, hash) {
+                myPlaintextPassword=hash;
+   User.findOneAndUpdate({_id:req.params.id},
+{    
+        $set:{
+        name:req.body.name,
+        email:req.body.email,
+        contact_no:req.body.contact_no,
+        age:req.body.age,
+        gender:req.body.gender,
+        password:myPlaintextPassword
+    }
+},function(err,result)
+{
+   
+    if(err)
+    {
+      res.json(err);
+    }
+    else
+    {
+      res.json(result);
+    }
+});
+});
+});
+});
+
+router.get('/hello',(req,res,next)=>{
+    User.find(function(err,contact)
+    {
+        if(err)
+        {
+            res.json(err);
+        }
+      else
+      {
+        res.json(contact);
+      } 
+        
+    });
+    });
+
+
+router.post('/contact',(req,res,next)=>{
+let newmessage=new contact({
+name:req.body.name,
+email:req.body.email,
+contact_no:req.body.contact_no,
+message:req.body.message
+});
+newmessage.save((err,result)=>{
+    if(err)
+    {
+       res.json(err);
+    }
+    else
+    {
+          res.json(result);
+    }
+});
+});
+
 
 /*
+//getting the users details
+router.get('/hello',(req,res,next)=>{
+    User.find(function(err,contact)
+    {
+      //  res.json({msg:'contacts showing successfully',contacts}); 
+        res.json(contact);
+    });
+    });
+
+
+
+
+
+
+
 
 //delete the particular user Detail
 router.delete('/signup/:id',(req,res,next)=>{
@@ -88,27 +173,6 @@ else
 }
 });
 });
-//update the user_details information
-router.put('/signup/:id',(req,res,next)=>{
-Signup.findOneAndUpdate({_id:req.params.id},
-{
-    $set:{
-        name:req.body.name,
-        email:req.body.email,
-        contact_no:req.body.contact_no,
-        age:req.body.age,
-        gender:req.body.gender,
-        password:req.body.password
-    }
-},function(err,result)
-{
-    if(err)
-    {
-      res.json(err);
-    }
-    else
-    {
-      res.json(result);
-    }
-});
-});*/
+
+*/
+module.exports=router;
