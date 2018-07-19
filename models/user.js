@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt=require('bcryptjs');
-
+var uniqueValidator = require('mongoose-unique-validator');
 const UserSchema = mongoose.Schema({
 
     name: {
@@ -9,7 +9,8 @@ const UserSchema = mongoose.Schema({
     },
     email: {
         required: true,
-        type: String
+        type: String,
+        unique:true,
     },
     contact_no: {
         required: true,
@@ -64,6 +65,7 @@ bcrypt.compare(candidatePassword,hash,(err,isMatch)=>{
 });
 }
 
+UserSchema.plugin(uniqueValidator);
 
 
 
